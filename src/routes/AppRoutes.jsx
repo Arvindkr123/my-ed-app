@@ -13,7 +13,7 @@ import SpacedRepetitionFlashcards from "../pages/SpacedRepetitionFlashcards.jsx"
 
 const AppRoutes = () => {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/my-ed-app">
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/quiz-app" element={<QuizApp />} />
