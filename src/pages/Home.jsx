@@ -124,7 +124,7 @@ const Home = () => {
           </p>
         </div>
 
-        {/* <div
+        <div
           onClick={() => navigate("/interactiveVideoPlayer")}
           className="bg-white p-6 rounded-xl shadow hover:shadow-md transition cursor-pointer hover:bg-black hover:text-white"
         >
@@ -136,7 +136,7 @@ const Home = () => {
             Add comments to videos at specific times, jump to key moments, and
             enhance your learning experience. Perfect for note-taking and
           </p>
-        </div> */}
+        </div>
 
         <div
           onClick={() => navigate("/lessonTimeline")}

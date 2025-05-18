@@ -23,10 +23,10 @@ const AppRoutes = () => {
         <Route path="/readingLog" element={<ReadingLog />} />
         <Route path="/markdownEditor" element={<MarkdownNoteEditor />} />
         <Route path="/adaptiveQuiz" element={<AdaptiveQuiz />} />
-        {/* <Route
+        <Route
           path="/interactiveVideoPlayer"
           element={<InteractiveVideoPlayer />}
-        /> */}
+        />
         <Route path="/lessonTimeline" element={<LessonTimeline />} />
         <Route
           path="/spacedRepetitionFlashcards"

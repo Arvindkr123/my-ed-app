@@ -1,6 +1,19 @@
 import React, { useState } from "react";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  horizontalListSortingStrategy,
+  useSortable,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 const initialLessons = [
   { id: "lesson-1", title: "Intro to HTML" },
@@ -9,18 +22,42 @@ const initialLessons = [
   { id: "lesson-4", title: "React Basics" },
 ];
 
+const SortableLessonCard = ({ lesson }) => {
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id: lesson.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      {...attributes}
+      {...listeners}
+      style={style}
+      className="w-48 p-4 bg-blue-100 rounded-lg shadow text-center cursor-grab"
+    >
+      <p className="font-medium text-blue-700">{lesson.title}</p>
+    </div>
+  );
+};
+
 const LessonTimeline = () => {
   const [lessons, setLessons] = useState(initialLessons);
   const navigate = useNavigate();
 
-  const handleOnDragEnd = (result) => {
-    if (!result.destination) return;
+  const sensors = useSensors(useSensor(PointerSensor));
 
-    const items = Array.from(lessons);
-    const [reorderedItem] = items.splice(result.source.index, 1);
-    items.splice(result.destination.index, 0, reorderedItem);
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
 
-    setLessons(items);
+    const oldIndex = lessons.findIndex((l) => l.id === active.id);
+    const newIndex = lessons.findIndex((l) => l.id === over.id);
+
+    setLessons((lessons) => arrayMove(lessons, oldIndex, newIndex));
   };
 
   return (
@@ -35,39 +72,22 @@ const LessonTimeline = () => {
         Go to Home
       </button>
       <div className="overflow-x-auto">
-        <DragDropContext onDragEnd={handleOnDragEnd}>
-          <Droppable droppableId="lessons" direction="horizontal">
-            {(provided) => (
-              <div
-                {...provided.droppableProps}
-                ref={provided.innerRef}
-                className="flex gap-4 min-w-fit p-4 border border-blue-200 bg-white rounded-xl shadow"
-              >
-                {lessons.map((lesson, index) => (
-                  <Draggable
-                    key={lesson.id}
-                    draggableId={lesson.id}
-                    index={index}
-                  >
-                    {(provided) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                        className="w-48 p-4 bg-blue-100 rounded-lg shadow text-center"
-                      >
-                        <p className="font-medium text-blue-700">
-                          {lesson.title}
-                        </p>
-                      </div>
-                    )}
-                  </Draggable>
-                ))}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
-        </DragDropContext>
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext
+            items={lessons.map((l) => l.id)}
+            strategy={horizontalListSortingStrategy}
+          >
+            <div className="flex gap-4 min-w-fit p-4 border border-blue-200 bg-white rounded-xl shadow">
+              {lessons.map((lesson) => (
+                <SortableLessonCard key={lesson.id} lesson={lesson} />
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
       </div>
     </div>
   );
