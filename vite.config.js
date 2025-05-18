@@ -7,5 +7,4 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
-  base: '/my-ed-app/'  // ✅ Correct for GitHub Pages
 })
